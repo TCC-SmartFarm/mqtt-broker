@@ -66,18 +66,18 @@ Conecte qualquer cliente MQTT (MQTTX, MQTT Explorer ou ESP32) ao endereço:
 _______
 
 ## O Broker recebe o seguinte padrao de mensagem
-`` mosquitto_pub -h <ip_do_broker> -i "<ID_de_quem_envia podendo ser o deviceId>" -u "<tipo_de_remetente>" -P "<senha_do_user>" -t "campo/<id_do_campo>/<tipo_de_remetente>/<deviceId>/dados" -m {payload:"payload"}`` 
+`` mosquitto_pub -h <ip_do_broker> -i "<ID_de_quem_envia podendo ser o deviceId>" -u "<tipo_de_remetente>" -P "<senha_do_user>" -t "campo/<id_do_campo>/<tipo_de_remetente>/<deviceId>/dados" -m {payload:"payload"} -r`` 
 
 (tipo_de_rementente === sensor)
 
-``mosquitto_pub -h localhost -i "1e23456" -u "sensor" -P "123" -t "campo/fazenda1/sensor/1e23456/dados" -m {payload:"payload"}``
+``mosquitto_pub -h localhost -i "1e23456" -u "sensor" -P "123" -t "campo/fazenda1/sensor/1e23456/dados" -m {payload:"payload"} -r``
 
-(-i === deviceId)
-(-u === userName)
-(-P === senha do usuario)
-(-t === Topico)
-(-m === payload)
-
+(-i === deviceId) <br>
+(-u === userName) <br>
+(-P === senha do usuario) <br>
+(-t === Topico) <br>
+(-m === payload) <br>
+(-r === armazenar o último valor válido para aquele tópico.) *persistencia* <br> 
 
 ### Topic 
 ``campo/{campoId}/sensor/{deviceId}/dados``

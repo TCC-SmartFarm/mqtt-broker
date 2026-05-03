@@ -1,5 +1,5 @@
-# Estágio de Compilação (Build)
-FROM golang:1.21-alpine AS builder
+# Alterado de 1.21 para 1.23 (ou 1.22) para satisfazer o go.mod
+FROM golang:1.23-alpine AS builder
 
 # Define o diretório de trabalho
 WORKDIR /app
@@ -12,7 +12,7 @@ RUN go mod download
 COPY . .
 
 # Compila o binário de forma estática (ideal para containers leves)
-RUN CGO_ENABLED=0 GOOS=linux go build -o broker .
+RUN CGO_ENABLED=0 GOOS=linux go build -o mqtt-broker .
 
 # Estágio Final (Runtime)
 FROM alpine:latest
@@ -20,10 +20,10 @@ FROM alpine:latest
 WORKDIR /root/
 
 # Copia apenas o binário do estágio de build
-COPY --from=builder /app/broker .
+COPY --from=builder /app/mqtt-broker .
 
 # Expoe a porta padrão do MQTT
 EXPOSE 1883
 
-# Comando para rodar o broker
-CMD ["./broker"]
+# Comando para rodar o mqtt-broker
+CMD ["./mqtt-broker"]

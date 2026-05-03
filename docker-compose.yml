@@ -1,0 +1,12 @@
+services:
+  # 1. Broker MQTT Customizado (O coração da ingestão LoRa)
+  # Desenvolvido em Go para alta performance e baixo consumo
+  mqtt-broker:
+    build: .
+    container_name: mqtt-broker
+    restart: always
+    ports:
+      - "1883:1883"      # Porta MQTT padrão
+      - "8883:8883"      # Porta para TLS/SSL (Futuro)
+    volumes:
+      - ./data/broker:/root/data/db # Persistência das Retained Messages

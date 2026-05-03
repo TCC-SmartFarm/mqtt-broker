@@ -9,13 +9,22 @@ import (
 
 	"github.com/mochi-mqtt/server/v2"
 	// "github.com/mochi-mqtt/server/v2/hooks/auth"
+	"github.com/mochi-mqtt/server/v2/hooks/storage/badger"
 	"github.com/mochi-mqtt/server/v2/listeners"
 	"github.com/mochi-mqtt/server/v2/packets" // Importante para reconhecer o tipo 'packets.Packet'
 )
 
 func main() {
 	server := mqtt.New(nil)
+
 	err := server.AddHook(new(AuthHook), nil)
+    if err != nil {
+        log.Fatal(err)
+    }
+
+	err = server.AddHook(new(badger.Hook), &badger.Options{
+		Path: "./data/db", // Onde os dados (inclusive mensagens retidas) serão salvos
+	})
     if err != nil {
         log.Fatal(err)
     }
