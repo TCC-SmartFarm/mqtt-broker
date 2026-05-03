@@ -48,6 +48,8 @@ docker build -t mqtt-broker .
 ```bash
 docker run -d -p 1883:1883 --name broker-container mqtt-broker
 ```
+ou ```docker compose up -d```
+
 3. **Verificar os logs (mensagens dos sensores):**
 
 ```bash
