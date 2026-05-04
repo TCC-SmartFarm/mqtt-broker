@@ -100,7 +100,11 @@ func (h *AuthHook) OnConnectAuthenticate(cl *mqtt.Client, pk packets.Packet) boo
 		return true // Admin tem acesso total
 	}
 
-	if user == "sensor" && pass == "123" {
+	if user == "fazenda0" && pass == "123" {
+		return true
+	}
+
+	if user == "fazenda1" && pass == "pass" {
 		return true
 	}
 
@@ -114,52 +118,37 @@ func (h *AuthHook) OnConnectAuthenticate(cl *mqtt.Client, pk packets.Packet) boo
 
 // ACL: Verifica se o cliente pode publicar/assinar em um tópico
 func (h *AuthHook) OnACLCheck(cl *mqtt.Client, topic string, write bool) bool {
+	username := string(cl.Properties.Username)
+	
 	// Regra de Ouro: Admin pode tudo
-	if string(cl.Properties.Username) == "admin" {
+	if username == "admin" {
 		return true
 	}
 
-	// Regra para Sensores: Só podem publicar no seu próprio prefixo
-	// Exemplo: O cliente "esp32" só publica em "campo/+/sensor/<cliente_id>/dados"
-	if string(cl.Properties.Username) == "sensor" {
-		if write {
-			topic = strings.TrimSuffix(topic, "/")
+	// mqtt_sub pode ler TUDO
+    if username == "mqtt_sub" {
+        return !write // Permite apenas leitura (Subscribe)
+    }
 
-			parts := strings.Split(topic, "/")
+    // Regra para Usuários de Fazendas (Sensores)
+    if write { // Tentativa de Publicação
+        topic = strings.TrimSuffix(topic, "/")
+        parts := strings.Split(topic, "/")
 
-			log.Printf("DEBUG ACL -> topic=%s parts=%v", topic, parts)
-
-			// Esperado: campo/<algo>/sensor/<clientID>/dados
-			if len(parts) != 5 {
-				return false
-			}
-
-			if parts[0] != "campo" {
-				return false
-			}
-
-			if parts[2] != "sensor" {
-				return false
-			}
-
-			if parts[3] != cl.ID {
-				return false
-			}
-
-			if parts[4] != "dados" {
-				return false
-			}
-
-			log.Printf("WRITE OK sensor [%s] topic [%s]", cl.ID, topic)
-			return true
-		}
-
-
-		// leitura bloqueada
-		if !write {
-			return true
-		}
-	}
+        // Validação: campo / {username} / sensor / {clientID} / dados
+        // Exemplo: campo/fazenda1/sensor/sensor01/dados
+        if len(parts) == 5 && 
+           parts[0] == "campo" && 
+           parts[1] == username && // O segundo nível TEM que ser o nome do usuário
+           parts[2] == "sensor" && 
+           parts[3] == cl.ID && 
+           parts[4] == "dados" {
+            return true
+        }
+        
+        log.Printf("ACL NEGADA: Usuário %s tentou publicar em tópico proibido: %s", username, topic)
+        return false
+    }
 
 	// Regra de Leitura (Subscribe): Impedir que sensores leiam dados de outros
 	return false 
