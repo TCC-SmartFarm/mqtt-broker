@@ -1,5 +1,5 @@
 # Alterado de 1.21 para 1.23 (ou 1.22) para satisfazer o go.mod
-FROM golang:1.23-alpine AS builder
+FROM golang:1.24-alpine AS builder
 
 # Define o diretório de trabalho
 WORKDIR /app

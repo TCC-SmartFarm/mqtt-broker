@@ -10,3 +10,9 @@ services:
       - "8883:8883"      # Porta para TLS/SSL (Futuro)
     volumes:
       - ./data/broker:/root/data/db # Persistência das Retained Messages
+    networks:
+      - smartfarm-network
+
+networks:
+  smartfarm-network:
+    external: true
