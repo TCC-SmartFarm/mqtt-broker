@@ -100,11 +100,19 @@ func (h *AuthHook) OnConnectAuthenticate(cl *mqtt.Client, pk packets.Packet) boo
 		return true // Admin tem acesso total
 	}
 
-	if user == "fazenda0" && pass == "123" {
+	if user == "fazenda0" && pass == "pass" {
 		return true
 	}
 
 	if user == "fazenda1" && pass == "pass" {
+		return true
+	}
+
+	if user == "fazenda2" && pass == "pass" {
+		return true
+	}
+
+	if user == "fazenda3" && pass == "pass" {
 		return true
 	}
 
@@ -118,15 +126,15 @@ func (h *AuthHook) OnConnectAuthenticate(cl *mqtt.Client, pk packets.Packet) boo
 
 // ACL: Verifica se o cliente pode publicar/assinar em um tópico
 func (h *AuthHook) OnACLCheck(cl *mqtt.Client, topic string, write bool) bool {
-	username := string(cl.Properties.Username)
+	userId := string(cl.Properties.Username)
 	
 	// Regra de Ouro: Admin pode tudo
-	if username == "admin" {
+	if userId == "admin" {
 		return true
 	}
 
 	// mqtt_sub pode ler TUDO
-    if username == "mqtt_sub" {
+    if userId == "mqtt_sub" {
         return !write // Permite apenas leitura (Subscribe)
     }
 
@@ -135,18 +143,18 @@ func (h *AuthHook) OnACLCheck(cl *mqtt.Client, topic string, write bool) bool {
         topic = strings.TrimSuffix(topic, "/")
         parts := strings.Split(topic, "/")
 
-        // Validação: campo / {username} / sensor / {clientID} / dados
-        // Exemplo: campo/fazenda1/sensor/sensor01/dados
+        // Validação: userId / {userId} / sensor / {clientID} / dados
+        // Exemplo: userId/fazenda1/sensor/sensor01/dados
         if len(parts) == 5 && 
-           parts[0] == "campo" && 
-           parts[1] == username && // O segundo nível TEM que ser o nome do usuário
+           parts[0] == "userId" && 
+           parts[1] == userId && // O segundo nível TEM que ser o nome do usuário
            parts[2] == "sensor" && 
            parts[3] == cl.ID && 
            parts[4] == "dados" {
             return true
         }
         
-        log.Printf("ACL NEGADA: Usuário %s tentou publicar em tópico proibido: %s", username, topic)
+        log.Printf("ACL NEGADA: Usuário %s tentou publicar em tópico proibido: %s", userId, topic)
         return false
     }
 
