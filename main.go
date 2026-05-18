@@ -116,6 +116,10 @@ func (h *AuthHook) OnConnectAuthenticate(cl *mqtt.Client, pk packets.Packet) boo
 		return true
 	}
 
+	if user == "auth0|69cb0b64c7c55babb4694086" && pass == "Teste123!" {
+		return true
+	}
+
 	if user == "mqtt_sub" && pass == "mqtt_sub" {
 		return true
 	}
