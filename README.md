@@ -72,7 +72,8 @@ _______
 
 (tipo_de_rementente === sensor)
 
-``mosquitto_pub -h localhost -i "1e23456" -u "fazenda1" -P "pass" -t "userId/fazenda1/sensor/1e23456/dados" -m '{"temperatura": 20, "umidade": 10, "ph": 5, "timestamp": 1778414400}' -r``
+``mosquitto_pub -h localhost -i "1e23456" -u "fazenda1" -P "pass" -t "userId/fazenda1/sensor/1e23456/dados" -m '{"name":"batata", "soil_temperature": 12, "soil_moisture": 123, "air_humidity": 124, "luminosity": 125, "air_temperature": 126, "battery": 127, "latitude": "-23.3454252", "longitude": "-46.123231","timestamp":1778275967}' -r``
+
 
 (-i === deviceId) <br>
 (-u === userId) <br>
