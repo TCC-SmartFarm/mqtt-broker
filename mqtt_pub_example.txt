@@ -1,0 +1,10 @@
+mosquitto_pub -h localhost -i "5e76ce4fd99eefe3" -u "public" -P "public" -t "application/c914c505-9a26-4c4b-acf1-400fa51514a0/device/5e76ce4fd99eefe3/event/up" -m '{
+    "time": "2026-07-08T19:53:55.352+00:00",
+    "deviceInfo": {
+        "applicationId": "c914c505-9a26-4c4b-acf1-400fa51514a0",
+        "deviceName": "2026-tcc-cmd03",
+        "devEui": "5e76ce4fd99eefe3"
+    },
+    "devAddr": "d99eefe3",
+    "data": "ak/fxQlRFtAQGB3nJlIB"
+}' -r

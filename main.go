@@ -5,7 +5,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"strings"
+	// "strings"
 
 	"github.com/mochi-mqtt/server/v2"
 	// "github.com/mochi-mqtt/server/v2/hooks/auth"
@@ -120,44 +120,54 @@ func (h *AuthHook) OnConnectAuthenticate(cl *mqtt.Client, pk packets.Packet) boo
 		return true
 	}
 
+	if user == "public" && pass == "public" {
+		return true
+	}
+
 	log.Printf("Conexão negada: Usuário %s incorreto", user)
 	return false
 }
 
 // ACL: Verifica se o cliente pode publicar/assinar em um tópico
 func (h *AuthHook) OnACLCheck(cl *mqtt.Client, topic string, write bool) bool {
-	userId := string(cl.Properties.Username)
+	// applicationId := string(cl.Properties.Username)
 	
-	// Regra de Ouro: Admin pode tudo
-	if userId == "admin" {
-		return true
-	}
+	// // Regra de Ouro: Admin pode tudo
+	// if applicationId == "admin" {
+	// 	return true
+	// }
 
-	// mqtt_sub pode ler TUDO
-    if userId == "mqtt_sub" {
-        return !write // Permite apenas leitura (Subscribe)
-    }
+	// // mqtt_sub pode ler TUDO
+    // if applicationId == "mqtt_sub" {
+    //     return !write // Permite apenas leitura (Subscribe)
+    // }
 
-    // Regra para Usuários de Fazendas (Sensores)
-    if write { // Tentativa de Publicação
-        topic = strings.TrimSuffix(topic, "/")
-        parts := strings.Split(topic, "/")
+	// if applicationId == "public" {
+    //     return !write // Permite apenas leitura (Subscribe)
+    // }
 
-        // Validação: userId / {userId} / sensor / {clientID} / dados
-        // Exemplo: userId/fazenda1/sensor/sensor01/dados
-        if len(parts) == 5 && 
-           parts[0] == "userId" && 
-           parts[1] == userId && // O segundo nível TEM que ser o nome do usuário
-           parts[2] == "sensor" && 
-           parts[3] == cl.ID && 
-           parts[4] == "dados" {
-            return true
-        }
+    // // Regra para Usuários de Fazendas (Sensores)
+    // if write { // Tentativa de Publicação
+    //     topic = strings.TrimSuffix(topic, "/")
+    //     parts := strings.Split(topic, "/")
+
+    //     // Validação: application / {application} / device / {devEUI} /event/up
+    //     // Exemplo: application/c914c505-9a26-4c4b-acf1-400fa51514a0/device/5e76ce4fd99eefe3/event/up
+    //     if len(parts) == 6 && 
+    //        parts[0] == "application" && 
+    //        parts[1] == applicationId && // O segundo nível TEM que ser o nome do usuário agora é a applicationId
+    //        parts[2] == "device" && 
+    //        parts[3] == cl.ID && 
+    //        parts[4] == "event" && 
+	// 	   parts[5] == "up" {
+    //         return true
+    //     }
         
-        log.Printf("ACL NEGADA: Usuário %s tentou publicar em tópico proibido: %s", userId, topic)
-        return false
-    }
+    //     log.Printf("ACL NEGADA: Usuário %s tentou publicar em tópico proibido: %s", applicationId, topic)
+    //     return false
+    // }
 
 	// Regra de Leitura (Subscribe): Impedir que sensores leiam dados de outros
-	return false 
+	// return false 
+	return true // Por enquanto, qualquer um pode ler qualquer tópico
 }
